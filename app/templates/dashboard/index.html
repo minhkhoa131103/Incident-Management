@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Incident Management{% endblock %}
+
+{% block content %}
+<div class="header-action">
+    <h2>Dashboard</h2>
+</div>
+
+<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 30px;">
+    <div class="card" style="text-align:center; padding:1.5rem;">
+        <h3 style="color:#555; font-size:1rem; margin-bottom:10px;">Total</h3>
+        <p style="font-size:2rem; font-weight:bold; color:#007bff;">{{ stats.total }}</p>
+    </div>
+    <div class="card" style="text-align:center; padding:1.5rem;">
+        <h3 style="color:#555; font-size:1rem; margin-bottom:10px;">Open</h3>
+        <p style="font-size:2rem; font-weight:bold; color:#17a2b8;">{{ stats.open }}</p>
+    </div>
+    <div class="card" style="text-align:center; padding:1.5rem;">
+        <h3 style="color:#555; font-size:1rem; margin-bottom:10px;">In Progress</h3>
+        <p style="font-size:2rem; font-weight:bold; color:#ffc107;">{{ stats.in_progress }}</p>
+    </div>
+    <div class="card" style="text-align:center; padding:1.5rem;">
+        <h3 style="color:#555; font-size:1rem; margin-bottom:10px;">Resolved/Closed</h3>
+        <p style="font-size:2rem; font-weight:bold; color:#28a745;">{{ stats.resolved + stats.closed }}</p>
+    </div>
+    <div class="card" style="text-align:center; padding:1.5rem;">
+        <h3 style="color:#555; font-size:1rem; margin-bottom:10px;">Critical</h3>
+        <p style="font-size:2rem; font-weight:bold; color:#dc3545;">{{ stats.critical }}</p>
+    </div>
+</div>
+
+<div class="card">
+    <h3>Recently Updated Incidents</h3>
+    <div class="table-responsive" style="margin-top:15px;">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>Last Updated</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for inc in recent_incidents %}
+                <tr>
+                    <td>#{{ inc.id }}</td>
+                    <td><a href="{{ url_for('incidents.view_incident', id=inc.id) }}">{{ inc.title }}</a></td>
+                    <td><span class="badge badge-{{ inc.priority.lower() }}">{{ inc.priority }}</span></td>
+                    <td><span class="badge badge-{{ inc.status.lower().replace(' ', '-') }}">{{ inc.status }}</span></td>
+                    <td>{{ inc.updated_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" style="text-align:center;">No recent incidents found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

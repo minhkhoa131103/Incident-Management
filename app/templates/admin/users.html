@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Users - Incident Management{% endblock %}
+
+{% block content %}
+<div class="header-action">
+    <h2>Manage Users</h2>
+</div>
+
+<div style="display:grid; grid-template-columns: 1fr 2fr; gap: 20px;">
+    <!-- Create User Form -->
+    <div class="card">
+        <h3>Create New User</h3>
+        <form method="POST" action="{{ url_for('admin.list_users') }}" class="form-container" style="margin-top:15px;">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                {{ form.username.label(class="form-label") }}
+                {{ form.username(class="form-control") }}
+            </div>
+            <div class="form-group">
+                {{ form.email.label(class="form-label") }}
+                {{ form.email(class="form-control") }}
+            </div>
+            <div class="form-group">
+                {{ form.password.label(class="form-label") }}
+                {{ form.password(class="form-control") }}
+            </div>
+            <div class="form-group">
+                {{ form.role.label(class="form-label") }}
+                {{ form.role(class="form-control") }}
+            </div>
+            {{ form.submit(class="btn btn-primary btn-full") }}
+        </form>
+    </div>
+
+    <!-- Users List -->
+    <div class="card">
+        <h3>All Users</h3>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Created</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in users %}
+                    <tr>
+                        <td>{{ u.id }}</td>
+                        <td>{{ u.username }}</td>
+                        <td>{{ u.email }}</td>
+                        <td>{{ u.role }}</td>
+                        <td>{{ u.created_at.strftime('%Y-%m-%d') }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

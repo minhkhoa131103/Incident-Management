@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Create Incident - Incident Management{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 600px; margin: 0 auto;">
+    <h2>Create New Incident</h2>
+    <form method="POST" action="{{ url_for('incidents.create_incident') }}" class="form-container">
+        {{ form.hidden_tag() }}
+        
+        <div class="form-group">
+            {{ form.title.label(class="form-label") }}
+            {{ form.title(class="form-control", placeholder="Brief title for the issue") }}
+            {% for error in form.title.errors %}
+                <span class="error-text">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="form-group">
+            {{ form.type.label(class="form-label") }}
+            {{ form.type(class="form-control") }}
+            {% for error in form.type.errors %}
+                <span class="error-text">{{ error }}</span>
+            {% endfor %}
+        </div>
+        
+        <div class="form-group">
+            {{ form.category_id.label(class="form-label") }}
+            {{ form.category_id(class="form-control") }}
+            {% for error in form.category_id.errors %}
+                <span class="error-text">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="form-group">
+            {{ form.description.label(class="form-label") }}
+            {{ form.description(class="form-control", rows="5", placeholder="Provide detailed information...") }}
+            {% for error in form.description.errors %}
+                <span class="error-text">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="form-actions" style="display:flex; gap:10px;">
+            {{ form.submit(class="btn btn-primary") }}
+            <a href="{{ url_for('incidents.list_incidents') }}" class="btn" style="background:#eee;">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

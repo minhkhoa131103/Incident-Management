@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Log In - Incident Management{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="card auth-card">
+        <h2>Log In</h2>
+        <form method="POST" action="{{ url_for('auth.login') }}" class="form-container">
+            {{ form.hidden_tag() }}
+            
+            <div class="form-group">
+                {{ form.username.label(class="form-label") }}
+                {{ form.username(class="form-control", placeholder="Enter your username") }}
+                {% for error in form.username.errors %}
+                    <span class="error-text">{{ error }}</span>
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                {{ form.password.label(class="form-label") }}
+                {{ form.password(class="form-control", placeholder="Enter your password") }}
+                {% for error in form.password.errors %}
+                    <span class="error-text">{{ error }}</span>
+                {% endfor %}
+            </div>
+
+            <div class="form-actions">
+                {{ form.submit(class="btn btn-primary btn-full") }}
+            </div>
+        </form>
+        <div class="auth-hints">
+            <p><small><strong>Demo Accounts:</strong> admin/admin123, agent/agent123, reporter/reporter123</small></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

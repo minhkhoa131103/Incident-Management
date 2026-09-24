@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Incident Management{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header class="navbar">
+        <div class="container nav-container">
+            <a href="{{ url_for('incidents.list_incidents') }}" class="nav-brand">IncidentManager</a>
+            <nav class="nav-links">
+                {% if current_user.is_authenticated %}
+                    {% if current_user.role in ['Admin', 'Agent'] %}
+                        <a href="{{ url_for('dashboard.index') }}">Dashboard</a>
+                    {% endif %}
+                    
+                    <a href="{{ url_for('incidents.list_incidents') }}">Incidents</a>
+                    
+                    {% if current_user.role == 'Admin' %}
+                        <a href="{{ url_for('admin.list_users') }}">Users</a>
+                        <a href="{{ url_for('admin.list_categories') }}">Categories</a>
+                    {% endif %}
+                    
+                    <span class="nav-user">Hello, {{ current_user.username }} ({{ current_user.role }})</span>
+                    <a href="{{ url_for('auth.logout') }}" class="btn-logout">Logout</a>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+
+    <main class="container main-content">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 Incident Management MVP.</p>
+        </div>
+    </footer>
+</body>
+</html>

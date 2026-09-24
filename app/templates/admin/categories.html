@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Categories - Incident Management{% endblock %}
+
+{% block content %}
+<div class="header-action">
+    <h2>Manage Categories</h2>
+</div>
+
+<div style="display:grid; grid-template-columns: 1fr 2fr; gap: 20px;">
+    <!-- Create Category Form -->
+    <div class="card">
+        <h3>Create Category</h3>
+        <form method="POST" action="{{ url_for('admin.list_categories') }}" class="form-container" style="margin-top:15px;">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                {{ form.name.label(class="form-label") }}
+                {{ form.name(class="form-control") }}
+            </div>
+            <div class="form-group">
+                {{ form.description.label(class="form-label") }}
+                {{ form.description(class="form-control", rows="3") }}
+            </div>
+            {{ form.submit(class="btn btn-primary btn-full") }}
+        </form>
+    </div>
+
+    <!-- Category List -->
+    <div class="card">
+        <h3>All Categories</h3>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in categories %}
+                    <tr>
+                        <td>{{ c.id }}</td>
+                        <td><strong>{{ c.name }}</strong></td>
+                        <td>{{ c.description or '' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

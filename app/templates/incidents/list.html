@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Incidents - Incident Management{% endblock %}
+
+{% block content %}
+<div class="header-action">
+    <h2>Incidents</h2>
+    {% if current_user.role in ['Admin', 'Reporter'] %}
+        <a href="{{ url_for('incidents.create_incident') }}" class="btn btn-primary">Create New Incident</a>
+    {% endif %}
+</div>
+
+<div class="card">
+    <form class="filter-form" method="GET" action="{{ url_for('incidents.list_incidents') }}">
+        <div class="filter-group">
+            <select name="status" class="form-control">
+                <option value="">All Statuses</option>
+                <option value="Open" {% if request.args.get('status') == 'Open' %}selected{% endif %}>Open</option>
+                <option value="In Progress" {% if request.args.get('status') == 'In Progress' %}selected{% endif %}>In Progress</option>
+                <option value="Resolved" {% if request.args.get('status') == 'Resolved' %}selected{% endif %}>Resolved</option>
+                <option value="Closed" {% if request.args.get('status') == 'Closed' %}selected{% endif %}>Closed</option>
+            </select>
+            <select name="priority" class="form-control">
+                <option value="">All Priorities</option>
+                <option value="Low" {% if request.args.get('priority') == 'Low' %}selected{% endif %}>Low</option>
+                <option value="Medium" {% if request.args.get('priority') == 'Medium' %}selected{% endif %}>Medium</option>
+                <option value="High" {% if request.args.get('priority') == 'High' %}selected{% endif %}>High</option>
+                <option value="Critical" {% if request.args.get('priority') == 'Critical' %}selected{% endif %}>Critical</option>
+            </select>
+            <button type="submit" class="btn btn-primary">Filter</button>
+            <a href="{{ url_for('incidents.list_incidents') }}" class="btn" style="background:#eee;">Clear</a>
+        </div>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Type</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for incident in incidents %}
+                <tr>
+                    <td>#{{ incident.id }}</td>
+                    <td>{{ incident.title }}</td>
+                    <td>{{ incident.type }}</td>
+                    <td><span class="badge badge-{{ incident.priority.lower() }}">{{ incident.priority }}</span></td>
+                    <td><span class="badge badge-{{ incident.status.lower().replace(' ', '-') }}">{{ incident.status }}</span></td>
+                    <td>{{ incident.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td><a href="{{ url_for('incidents.view_incident', id=incident.id) }}">View</a></td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="7" style="text-align:center;">No incidents found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

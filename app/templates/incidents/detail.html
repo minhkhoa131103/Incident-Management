@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block title %}Incident #{{ incident.id }} - Incident Management{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="header-action" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding-bottom:10px; border-bottom:1px solid #eee;">
+        <h2>Incident #{{ incident.id }}: {{ incident.title }}</h2>
+        <a href="{{ url_for('incidents.list_incidents') }}" class="btn" style="background:#eee;">Back to List</a>
+    </div>
+
+    <div style="display:grid; grid-template-columns: 2fr 1fr; gap: 20px;">
+        <!-- Main Details -->
+        <div>
+            <div style="margin-bottom: 20px;">
+                <strong>Description:</strong>
+                <div style="margin-top:10px; padding:15px; background:#f9f9f9; border-radius:4px; min-height:100px; white-space:pre-wrap;">{{ incident.description }}</div>
+            </div>
+
+            <!-- Comments Section -->
+            <div style="margin-top: 30px;">
+                <h3>Comments</h3>
+                <div style="margin-top: 15px;">
+                    {% for comment in incident.comments %}
+                    <div style="background:#fff; border:1px solid #ddd; border-radius:4px; padding:15px; margin-bottom:15px;">
+                        <div style="margin-bottom:10px; display:flex; justify-content:space-between; color:#666; font-size:0.9rem;">
+                            <strong>{{ comment.author.username }} ({{ comment.author.role }})</strong>
+                            <span>{{ comment.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+                        </div>
+                        <div style="white-space:pre-wrap;">{{ comment.content }}</div>
+                    </div>
+                    {% else %}
+                    <p style="color:#777;">No comments yet.</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Add Comment Form -->
+                {% if comment_form %}
+                <div style="margin-top:20px; background:#f9f9f9; padding:15px; border-radius:4px;">
+                    <h4>Add a Comment</h4>
+                    <form method="POST" action="{{ url_for('incidents.comment_incident', id=incident.id) }}" style="margin-top:10px;">
+                        {{ comment_form.hidden_tag() }}
+                        <div class="form-group">
+                            {{ comment_form.content(class="form-control", rows="3", placeholder="Type your comment here...") }}
+                        </div>
+                        {{ comment_form.submit(class="btn btn-primary") }}
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Sidebar Info -->
+        <div>
+            <div style="background:#f9f9f9; padding:15px; border-radius:4px;">
+                <p><strong>Status:</strong> <span class="badge badge-{{ incident.status.lower().replace(' ', '-') }}">{{ incident.status }}</span></p>
+                <p><strong>Priority:</strong> <span class="badge badge-{{ incident.priority.lower() }}">{{ incident.priority }}</span></p>
+                <p><strong>Type:</strong> {{ incident.type }}</p>
+                <p><strong>Category:</strong> {{ incident.category.name if incident.category else 'None' }}</p>
+                <hr style="margin: 10px 0; border:0; border-top:1px solid #ddd;">
+                <p><strong>Reporter:</strong> {{ incident.reporter.username }}</p>
+                <p><strong>Assignee:</strong> {{ incident.assignee.username if incident.assignee else 'Unassigned' }}</p>
+                <p><strong>Created:</strong> <small>{{ incident.created_at.strftime('%Y-%m-%d %H:%M') }}</small></p>
+                <p><strong>Updated:</strong> <small>{{ incident.updated_at.strftime('%Y-%m-%d %H:%M') }}</small></p>
+            </div>
+            
+            <div style="margin-top: 15px;">
+                <!-- Admin Assignment Form -->
+                {% if assign_form %}
+                <div style="background:#fff; padding:15px; border:1px solid #ddd; border-radius:4px; margin-bottom:15px;">
+                    <h4 style="margin-bottom:10px;">Assign Agent</h4>
+                    <form method="POST" action="{{ url_for('incidents.assign_incident', id=incident.id) }}">
+                        {{ assign_form.hidden_tag() }}
+                        <div class="filter-group">
+                            {{ assign_form.assignee_id(class="form-control") }}
+                            {{ assign_form.submit(class="btn btn-primary") }}
+                        </div>
+                    </form>
+                </div>
+                {% endif %}
+
+                <!-- Reporter Edit Form -->
+                {% if edit_form %}
+                <div style="background:#fff; padding:15px; border:1px solid #ddd; border-radius:4px; margin-bottom:15px;">
+                    <h4 style="margin-bottom:10px;">Edit Incident (Open only)</h4>
+                    <form method="POST" action="{{ url_for('incidents.update_incident', id=incident.id) }}">
+                        {{ edit_form.hidden_tag() }}
+                        <div class="form-group">
+                            {{ edit_form.title.label(class="form-label") }}
+                            {{ edit_form.title(class="form-control") }}
+                        </div>
+                        <div class="form-group">
+                            {{ edit_form.description.label(class="form-label") }}
+                            {{ edit_form.description(class="form-control", rows="3") }}
+                        </div>
+                        <div class="form-group">
+                            {{ edit_form.type.label(class="form-label") }}
+                            {{ edit_form.type(class="form-control") }}
+                        </div>
+                        <div class="form-group">
+                            {{ edit_form.category_id.label(class="form-label") }}
+                            {{ edit_form.category_id(class="form-control") }}
+                        </div>
+                        {{ edit_form.submit(class="btn btn-primary btn-full") }}
+                    </form>
+                </div>
+                {% endif %}
+
+                <!-- Agent/Admin Update Form -->
+                {% if update_form %}
+                <div style="background:#fff; padding:15px; border:1px solid #ddd; border-radius:4px; margin-bottom:15px;">
+                    <h4 style="margin-bottom:10px;">Update Incident</h4>
+                    <form method="POST" action="{{ url_for('incidents.update_incident', id=incident.id) }}">
+                        {{ update_form.hidden_tag() }}
+                        <div class="form-group">
+                            {{ update_form.type.label(class="form-label") }}
+                            {{ update_form.type(class="form-control") }}
+                        </div>
+                        <div class="form-group">
+                            {{ update_form.category_id.label(class="form-label") }}
+                            {{ update_form.category_id(class="form-control") }}
+                        </div>
+                        <div class="form-group">
+                            {{ update_form.priority.label(class="form-label") }}
+                            {{ update_form.priority(class="form-control") }}
+                        </div>
+                        <div class="form-group">
+                            {{ update_form.status.label(class="form-label") }}
+                            {{ update_form.status(class="form-control") }}
+                        </div>
+                        {{ update_form.submit(class="btn btn-primary btn-full") }}
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
