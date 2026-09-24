@@ -53,4 +53,12 @@ def create_app(config_name=None):
             return redirect(url_for('incidents.list_incidents'))
         return redirect(url_for('dashboard.index'))
 
+    @app.after_request
+    def add_header(response):
+        # Prevent browser caching of dynamic pages
+        response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '-1'
+        return response
+
     return app

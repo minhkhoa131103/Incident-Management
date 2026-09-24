@@ -33,10 +33,14 @@ class Role(db.Model):
     def has_permission(self, perm_name):
         return self.permissions.filter_by(name=perm_name).first() is not None
 
-    def add_permission(self, permission):
+    def add_permission(self, permission, force=False):
+        if self.is_system and not force:
+            raise ValueError("Cannot add permissions to a system role.")
         if not self.has_permission(permission.name):
             self.permissions.append(permission)
 
-    def remove_permission(self, permission):
+    def remove_permission(self, permission, force=False):
+        if self.is_system and not force:
+            raise ValueError("Cannot remove permissions from a system role.")
         if self.has_permission(permission.name):
             self.permissions.remove(permission)

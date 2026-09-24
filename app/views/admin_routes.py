@@ -214,25 +214,25 @@ def edit_role(id):
         else:
             if not role.is_system:
                 role.name = form.name.data
+                
+                # Update permissions
+                selected_perms = request.form.getlist('permissions')
+                selected_perm_ids = [int(p) for p in selected_perms]
+                
+                # Remove unselected
+                for perm in role.permissions.all():
+                    if perm.id not in selected_perm_ids:
+                        role.remove_permission(perm)
+                
+                # Add newly selected
+                current_perm_ids = [p.id for p in role.permissions.all()]
+                for perm_id in selected_perm_ids:
+                    if perm_id not in current_perm_ids:
+                        perm = Permission.query.get(perm_id)
+                        if perm:
+                            role.add_permission(perm)
+            
             role.description = form.description.data
-            
-            # Update permissions
-            selected_perms = request.form.getlist('permissions')
-            selected_perm_ids = [int(p) for p in selected_perms]
-            
-            # Remove unselected
-            for perm in role.permissions.all():
-                if perm.id not in selected_perm_ids:
-                    role.remove_permission(perm)
-            
-            # Add newly selected
-            current_perm_ids = [p.id for p in role.permissions.all()]
-            for perm_id in selected_perm_ids:
-                if perm_id not in current_perm_ids:
-                    perm = Permission.query.get(perm_id)
-                    if perm:
-                        role.add_permission(perm)
-                        
             db.session.commit()
             log_action(current_user.id, 'EDIT_ROLE', 'Role', role.id, {'name': role.name})
             flash('Role updated successfully.', 'success')

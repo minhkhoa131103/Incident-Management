@@ -40,3 +40,14 @@ htmlcov/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Flask additions
+.flaskenv
+*.log
+
+# Additional venv
+.venv/
+
+Implementation_Plan_v2.1.md
+Phase_2_Implementation_Plan.md
+Project_Context.md

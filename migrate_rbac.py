@@ -48,7 +48,7 @@ def run_migration():
             # Reset and assign permissions
             role.permissions = []
             for p_name in p_names:
-                role.add_permission(perms_dict[p_name])
+                role.add_permission(perms_dict[p_name], force=True)
             roles_dict[r_name] = role
         db.session.commit()
         

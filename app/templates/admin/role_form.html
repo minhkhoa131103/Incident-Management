@@ -33,10 +33,16 @@
         <div class="form-group">
             <label class="form-label">Permissions</label>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; background: #f9f9f9; padding: 15px; border-radius: 5px; border: 1px solid #eee;">
+                {% if role and role.is_system %}
+                <div style="grid-column: 1 / -1; margin-bottom: 10px;">
+                    <small style="color: #d9534f;">System role permissions cannot be modified.</small>
+                </div>
+                {% endif %}
                 {% for perm in permissions %}
                 <div style="display: flex; align-items: flex-start; gap: 8px;">
                     <input type="checkbox" id="perm_{{ perm.id }}" name="permissions" value="{{ perm.id }}"
-                           {% if perm.id in role_perm_ids %}checked{% endif %} style="margin-top: 4px;">
+                           {% if perm.id in role_perm_ids %}checked{% endif %}
+                           {% if role and role.is_system %}disabled{% endif %} style="margin-top: 4px;">
                     <label for="perm_{{ perm.id }}" style="font-size: 0.9rem; cursor: pointer;">
                         <strong>{{ perm.name }}</strong>
                     </label>
