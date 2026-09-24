@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Roles - Incident Management{% endblock %}
+
+{% block content %}
+<div class="header-action">
+    <h2>Manage Roles</h2>
+    <a href="{{ url_for('admin.create_role') }}" class="btn btn-primary">Create New Role</a>
+</div>
+
+<div class="card">
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>System Role</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for role in roles %}
+                <tr>
+                    <td><strong>{{ role.name }}</strong></td>
+                    <td>{{ role.description }}</td>
+                    <td>
+                        {% if role.is_system %}
+                            <span class="badge badge-critical">System</span>
+                        {% else %}
+                            <span class="badge badge-resolved">Custom</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div style="display:flex; gap:5px;">
+                            <a href="{{ url_for('admin.edit_role', id=role.id) }}" class="btn btn-secondary" style="padding: 2px 8px; font-size: 0.8rem;">Edit</a>
+                            
+                            {% if not role.is_system %}
+                            <form method="POST" action="{{ url_for('admin.delete_role', id=role.id) }}" style="display:inline;" onsubmit="return confirm('Are you sure you want to permanently delete this role?');">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-danger" style="padding: 2px 8px; font-size: 0.8rem;">Delete</button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4" style="text-align:center;">No roles found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

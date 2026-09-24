@@ -14,6 +14,10 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user is not None and user.verify_password(form.password.data):
+            if not user.is_active:
+                flash('Your account has been disabled. Please contact an administrator.', 'error')
+                return render_template('auth/login.html', form=form)
+                
             login_user(user)
             next_page = request.args.get('next')
             if next_page is None or not next_page.startswith('/'):

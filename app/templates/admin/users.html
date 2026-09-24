@@ -26,8 +26,8 @@
                 {{ form.password(class="form-control") }}
             </div>
             <div class="form-group">
-                {{ form.role.label(class="form-label") }}
-                {{ form.role(class="form-control") }}
+                {{ form.role_id.label(class="form-label") }}
+                {{ form.role_id(class="form-control") }}
             </div>
             {{ form.submit(class="btn btn-primary btn-full") }}
         </form>
@@ -40,21 +40,47 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th>ID</th>
                         <th>Username</th>
                         <th>Email</th>
                         <th>Role</th>
-                        <th>Created</th>
+                        <th>Status</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for u in users %}
                     <tr>
-                        <td>{{ u.id }}</td>
                         <td>{{ u.username }}</td>
                         <td>{{ u.email }}</td>
                         <td>{{ u.role }}</td>
-                        <td>{{ u.created_at.strftime('%Y-%m-%d') }}</td>
+                        <td>
+                            {% if u.is_active %}
+                                <span class="badge badge-resolved">Active</span>
+                            {% else %}
+                                <span class="badge badge-critical">Disabled</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div style="display:flex; gap:5px;">
+                                <a href="{{ url_for('admin.edit_user', id=u.id) }}" class="btn btn-secondary" style="padding: 2px 8px; font-size: 0.8rem;">Edit</a>
+                                
+                                {% if u.id != current_user.id %}
+                                <form method="POST" action="{{ url_for('admin.toggle_user', id=u.id) }}" style="display:inline;">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn btn-secondary" style="padding: 2px 8px; font-size: 0.8rem;">
+                                        {% if u.is_active %}Disable{% else %}Enable{% endif %}
+                                    </button>
+                                </form>
+
+                                <form method="POST" action="{{ url_for('admin.delete_user', id=u.id) }}" style="display:inline;" onsubmit="return confirm('Are you sure you want to permanently delete this user?');">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn btn-danger" style="padding: 2px 8px; font-size: 0.8rem;">Delete</button>
+                                </form>
+                                {% else %}
+                                <span style="font-size:0.8rem; color:#999;">(you)</span>
+                                {% endif %}
+                            </div>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}{% if role %}Edit Role{% else %}Create Role{% endif %} - Incident Management{% endblock %}
+
+{% block content %}
+<div class="header-action">
+    <h2>{% if role %}Edit Role: {{ role.name }}{% else %}Create New Role{% endif %}</h2>
+    <a href="{{ url_for('admin.list_roles') }}" class="btn btn-secondary">Back to Roles</a>
+</div>
+
+<div class="card" style="max-width: 600px; margin: 0 auto;">
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            {{ form.name.label(class="form-label") }}
+            {{ form.name(class="form-control", readonly=role.is_system if role else False) }}
+            {% if role and role.is_system %}
+                <small style="color: #666;">System role names cannot be changed.</small>
+            {% endif %}
+            {% for error in form.name.errors %}
+                <span class="error-text">{{ error }}</span>
+            {% endfor %}
+        </div>
+        
+        <div class="form-group">
+            {{ form.description.label(class="form-label") }}
+            {{ form.description(class="form-control") }}
+            {% for error in form.description.errors %}
+                <span class="error-text">{{ error }}</span>
+            {% endfor %}
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">Permissions</label>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; background: #f9f9f9; padding: 15px; border-radius: 5px; border: 1px solid #eee;">
+                {% for perm in permissions %}
+                <div style="display: flex; align-items: flex-start; gap: 8px;">
+                    <input type="checkbox" id="perm_{{ perm.id }}" name="permissions" value="{{ perm.id }}"
+                           {% if perm.id in role_perm_ids %}checked{% endif %} style="margin-top: 4px;">
+                    <label for="perm_{{ perm.id }}" style="font-size: 0.9rem; cursor: pointer;">
+                        <strong>{{ perm.name }}</strong>
+                    </label>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <div style="margin-top: 20px;">
+            {{ form.submit(class="btn btn-primary btn-full") }}
+        </div>
+    </form>
+</div>
+{% endblock %}

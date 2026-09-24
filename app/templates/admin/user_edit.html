@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Edit User - Incident Management{% endblock %}
+
+{% block content %}
+<div class="header-action">
+    <h2>Edit User: {{ user.username }}</h2>
+    <a href="{{ url_for('admin.list_users') }}" class="btn btn-secondary">Back to Users</a>
+</div>
+
+<div class="card" style="max-width: 500px; margin: 20px auto;">
+    <form method="POST" action="{{ url_for('admin.edit_user', id=user.id) }}" class="form-container">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            {{ form.username.label(class="form-label") }}
+            {{ form.username(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.email.label(class="form-label") }}
+            {{ form.email(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.password.label(class="form-label") }}
+            {{ form.password(class="form-control") }}
+            <small style="color: #666;">Leave blank to keep the current password.</small>
+        </div>
+        <div class="form-group">
+            {{ form.role_id.label(class="form-label") }}
+            {{ form.role_id(class="form-control") }}
+        </div>
+        {{ form.submit(class="btn btn-primary btn-full") }}
+    </form>
+</div>
+{% endblock %}

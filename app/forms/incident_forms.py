@@ -29,5 +29,5 @@ class IncidentAssignForm(FlaskForm):
     submit = SubmitField('Assign')
 
 class IncidentCommentForm(FlaskForm):
-    content = TextAreaField('Add a comment...', validators=[DataRequired()])
+    content = TextAreaField('Add a comment...', validators=[DataRequired(), Length(max=10000)])
     submit = SubmitField('Post Comment')

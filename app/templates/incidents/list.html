@@ -11,22 +11,60 @@
 </div>
 
 <div class="card">
+    <!-- BUG-021: Full filter form — status, priority, type, category, assignee, title search -->
     <form class="filter-form" method="GET" action="{{ url_for('incidents.list_incidents') }}">
-        <div class="filter-group">
+        <div class="filter-group" style="flex-wrap: wrap; gap: 8px;">
+
+            <!-- Title search -->
+            <input type="text" name="title" class="form-control" placeholder="Search title…"
+                   value="{{ request.args.get('title', '') }}" style="min-width: 180px; flex: 1;">
+
+            <!-- Status -->
             <select name="status" class="form-control">
                 <option value="">All Statuses</option>
-                <option value="Open" {% if request.args.get('status') == 'Open' %}selected{% endif %}>Open</option>
+                <option value="Open"        {% if request.args.get('status') == 'Open' %}selected{% endif %}>Open</option>
                 <option value="In Progress" {% if request.args.get('status') == 'In Progress' %}selected{% endif %}>In Progress</option>
-                <option value="Resolved" {% if request.args.get('status') == 'Resolved' %}selected{% endif %}>Resolved</option>
-                <option value="Closed" {% if request.args.get('status') == 'Closed' %}selected{% endif %}>Closed</option>
+                <option value="Resolved"    {% if request.args.get('status') == 'Resolved' %}selected{% endif %}>Resolved</option>
+                <option value="Closed"      {% if request.args.get('status') == 'Closed' %}selected{% endif %}>Closed</option>
             </select>
+
+            <!-- Priority -->
             <select name="priority" class="form-control">
                 <option value="">All Priorities</option>
-                <option value="Low" {% if request.args.get('priority') == 'Low' %}selected{% endif %}>Low</option>
-                <option value="Medium" {% if request.args.get('priority') == 'Medium' %}selected{% endif %}>Medium</option>
-                <option value="High" {% if request.args.get('priority') == 'High' %}selected{% endif %}>High</option>
+                <option value="Low"      {% if request.args.get('priority') == 'Low' %}selected{% endif %}>Low</option>
+                <option value="Medium"   {% if request.args.get('priority') == 'Medium' %}selected{% endif %}>Medium</option>
+                <option value="High"     {% if request.args.get('priority') == 'High' %}selected{% endif %}>High</option>
                 <option value="Critical" {% if request.args.get('priority') == 'Critical' %}selected{% endif %}>Critical</option>
             </select>
+
+            <!-- Type -->
+            <select name="type" class="form-control">
+                <option value="">All Types</option>
+                <option value="Bug"      {% if request.args.get('type') == 'Bug' %}selected{% endif %}>Bug</option>
+                <option value="Incident" {% if request.args.get('type') == 'Incident' %}selected{% endif %}>Incident</option>
+            </select>
+
+            <!-- Category -->
+            {% if categories %}
+            <select name="category_id" class="form-control">
+                <option value="">All Categories</option>
+                {% for c in categories %}
+                <option value="{{ c.id }}" {% if request.args.get('category_id') == c.id|string %}selected{% endif %}>{{ c.name }}</option>
+                {% endfor %}
+            </select>
+            {% endif %}
+
+            <!-- Assignee (Admin/Agent only) -->
+            {% if agents %}
+            <select name="assignee_id" class="form-control">
+                <option value="">All Assignees</option>
+                <option value="0" {% if request.args.get('assignee_id') == '0' %}selected{% endif %}>Unassigned</option>
+                {% for a in agents %}
+                <option value="{{ a.id }}" {% if request.args.get('assignee_id') == a.id|string %}selected{% endif %}>{{ a.username }}</option>
+                {% endfor %}
+            </select>
+            {% endif %}
+
             <button type="submit" class="btn btn-primary">Filter</button>
             <a href="{{ url_for('incidents.list_incidents') }}" class="btn" style="background:#eee;">Clear</a>
         </div>

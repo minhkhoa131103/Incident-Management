@@ -12,16 +12,30 @@
             <a href="{{ url_for('incidents.list_incidents') }}" class="nav-brand">IncidentManager</a>
             <nav class="nav-links">
                 {% if current_user.is_authenticated %}
-                    {% if current_user.role in ['Admin', 'Agent'] %}
+                    {% if current_user.has_permission('VIEW_DASHBOARD') %}
                         <a href="{{ url_for('dashboard.index') }}">Dashboard</a>
                     {% endif %}
                     
                     <a href="{{ url_for('incidents.list_incidents') }}">Incidents</a>
                     
-                    {% if current_user.role == 'Admin' %}
+                    {% if current_user.has_permission('MANAGE_USERS') %}
                         <a href="{{ url_for('admin.list_users') }}">Users</a>
+                    {% endif %}
+                    {% if current_user.has_permission('MANAGE_ROLES') %}
+                        <a href="{{ url_for('admin.list_roles') }}">Roles</a>
+                    {% endif %}
+                    {% if current_user.has_permission('MANAGE_CATEGORIES') %}
                         <a href="{{ url_for('admin.list_categories') }}">Categories</a>
                     {% endif %}
+                    
+                    {% if current_user.has_permission('VIEW_AUDIT_LOGS') %}
+                        <a href="{{ url_for('admin.list_audit_logs') }}">Audit Logs</a>
+                    {% endif %}
+                    
+                    {% set unread_count = current_user.notifications.filter_by(is_read=False).count() %}
+                    <a href="{{ url_for('notifications.list_notifications') }}" style="font-weight: bold;">
+                        Notifications {% if unread_count > 0 %}<span style="background: red; color: white; padding: 2px 6px; border-radius: 10px; font-size: 0.8em;">{{ unread_count }}</span>{% endif %}
+                    </a>
                     
                     <span class="nav-user">Hello, {{ current_user.username }} ({{ current_user.role }})</span>
                     <a href="{{ url_for('auth.logout') }}" class="btn-logout">Logout</a>

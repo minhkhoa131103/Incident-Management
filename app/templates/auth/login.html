@@ -29,9 +29,11 @@
                 {{ form.submit(class="btn btn-primary btn-full") }}
             </div>
         </form>
+        {% if config.DEBUG %}
         <div class="auth-hints">
             <p><small><strong>Demo Accounts:</strong> admin/admin123, agent/agent123, reporter/reporter123</small></p>
         </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

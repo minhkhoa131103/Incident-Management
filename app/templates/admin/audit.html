@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Audit Logs - Incident Management{% endblock %}
+
+{% block content %}
+<div class="header-action">
+    <h2>Audit Logs</h2>
+</div>
+
+<!-- BUG-029: Filter form -->
+<div class="card" style="margin-bottom: 20px; padding: 15px;">
+    <form method="GET" action="{{ url_for('admin.list_audit_logs') }}"
+          style="display:flex; align-items:center; gap: 12px; flex-wrap: wrap;">
+        <input type="text" name="action" class="form-control" placeholder="Filter by action…"
+               value="{{ action_filter }}" style="width: 200px;">
+        <input type="text" name="actor" class="form-control" placeholder="Filter by actor…"
+               value="{{ actor_filter }}" style="width: 160px;">
+        <button type="submit" class="btn btn-primary">Apply</button>
+        <a href="{{ url_for('admin.list_audit_logs') }}" class="btn" style="background:#eee;">Clear</a>
+    </form>
+</div>
+
+<div class="card">
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Actor</th>
+                    <th>Action</th>
+                    <th>Resource</th>
+                    <th>Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td style="white-space:nowrap;">{{ log.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                    <td>{{ log.user.username if log.user else 'System' }}</td>
+                    <td><span class="badge badge-info">{{ log.action }}</span></td>
+                    <td>{{ log.resource_type }} {% if log.resource_id %}#{{ log.resource_id }}{% else %}N/A{% endif %}</td>
+                    <td style="font-size: 0.9em; color: #555;">{{ log.details }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" style="text-align:center;">No audit logs found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if pagination and pagination.pages > 1 %}
+    <div style="display:flex; justify-content:center; align-items:center; gap:8px; margin-top: 15px; padding-bottom: 10px;">
+        {% if pagination.has_prev %}
+            <a href="{{ url_for('admin.list_audit_logs', page=pagination.prev_num, action=action_filter, actor=actor_filter) }}"
+               class="btn btn-secondary" style="padding: 4px 12px;">&laquo; Prev</a>
+        {% endif %}
+
+        <span style="font-size: 0.9rem; color: #555;">
+            Page {{ pagination.page }} of {{ pagination.pages }}
+            ({{ pagination.total }} total entries)
+        </span>
+
+        {% if pagination.has_next %}
+            <a href="{{ url_for('admin.list_audit_logs', page=pagination.next_num, action=action_filter, actor=actor_filter) }}"
+               class="btn btn-secondary" style="padding: 4px 12px;">Next &raquo;</a>
+        {% endif %}
+    </div>
+    {% elif pagination %}
+    <p style="text-align:center; font-size:0.85rem; color:#888; margin-top: 10px;">
+        Showing all {{ pagination.total }} entries.
+    </p>
+    {% endif %}
+</div>
+{% endblock %}
